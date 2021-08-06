@@ -102,7 +102,7 @@ const createPage = (index, numberOfQuestionsInPage) => {
         type: "radiogroup",
         name: (i + 1).toString(),
         title: questions[i],
-        isRequired: false,
+        isRequired: true,
         choices: ["Sí", "No"],
         requiredErrorText: "Por favor responde la pregunta",
       });
