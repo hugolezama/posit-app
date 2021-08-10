@@ -15,6 +15,7 @@ import {
 } from "@material-ui/pickers";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import firebase from "../firebase";
 
 const Demographic = () => {
   const history = useHistory();
@@ -22,17 +23,34 @@ const Demographic = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
-  const [dob, setDob] = useState(null);
+  const [dob, setDob] = useState(new Date());
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    console.log("name :", name);
-    console.log("lastName :", lastName);
-    console.log("email :", email);
-    console.log("gender :", gender);
-    console.log("dob :", dob);
 
-    history.push("/survey");
+    const ref = firebase.collection("surveys");
+    console.log(ref);
+    const newSurvey = {
+      name: name,
+      lastName: lastName,
+      email: email,
+      gender: gender,
+      dob: dob.toLocaleDateString("en-MX"),
+      created: new Date().toISOString(),
+    };
+
+    console.log(newSurvey);
+
+    ref
+      .add(newSurvey)
+      .then((docRef) => {
+        console.log(docRef.id);
+        localStorage.setItem("surveyId", docRef.id);
+        history.push("/survey");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
   return (
     <Container

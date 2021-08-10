@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import * as Survey from "survey-react";
+import { useHistory } from "react-router-dom";
 import "survey-react/modern.css";
 import "../index.css";
+import firebase from "../firebase";
 
 Survey.StylesManager.applyTheme("modern");
 const myloc = Survey.surveyLocalization.locales["en"];
@@ -103,7 +105,10 @@ const createPage = (index, numberOfQuestionsInPage) => {
         name: (i + 1).toString(),
         title: questions[i],
         isRequired: true,
-        choices: ["Sí", "No"],
+        choices: [
+          { text: "Sí", value: true },
+          { text: "No", value: false },
+        ],
         requiredErrorText: "Por favor responde la pregunta",
       });
     }
@@ -123,7 +128,364 @@ for (let i = 0; i < questions.length / numberOfQuestionsInPage; i++) {
   );
 }
 
+const analyseResult = (data) => {
+  const questionMatrix = {
+    2: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    17: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    21: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    25: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    33: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    38: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    41: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    46: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    47: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    48: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    54: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    56: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    57: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    58: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    62: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    65: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    68: {
+      category: "Uso-abuso de sustancias",
+      rf: true,
+    },
+    5: {
+      category: "Salud mental",
+    },
+    6: {
+      category: "Salud mental",
+      rf: true,
+    },
+    8: {
+      categories: ["Salud mental", "Nivel educativo"],
+    },
+    10: {
+      category: "Salud mental",
+    },
+    15: {
+      categories: ["Salud mental", "Nivel educativo"],
+    },
+    23: {
+      category: "Salud mental",
+    },
+    28: {
+      category: "Salud mental",
+      rf: true,
+    },
+
+    43: {
+      category: "Salud mental",
+    },
+    55: {
+      category: "Salud mental",
+      rf: true,
+    },
+    60: {
+      category: "Salud mental",
+    },
+    63: {
+      category: "Salud mental",
+    },
+    66: {
+      categories: ["Salud mental", "Nivel educativo"],
+    },
+    75: {
+      category: "Salud mental",
+      rf: true,
+    },
+    76: {
+      category: "Salud mental",
+      rf: true,
+    },
+
+    4: {
+      category: "Relaciones familiares",
+    },
+    14: {
+      category: "Relaciones familiares",
+    },
+    20: {
+      category: "Relaciones familiares",
+      rf: true,
+      inverse: true,
+    },
+    22: {
+      category: "Relaciones familiares",
+      inverse: true,
+    },
+    32: {
+      category: "Relaciones familiares",
+      inverse: true,
+    },
+    39: {
+      category: "Relaciones familiares",
+      inverse: true,
+    },
+    45: {
+      category: "Relaciones familiares",
+      rf: true,
+    },
+    52: {
+      category: "Relaciones familiares",
+      rf: true,
+      inverse: true,
+    },
+    70: {
+      category: "Relaciones familiares",
+      inverse: true,
+    },
+    71: {
+      category: "Relaciones familiares",
+      inverse: true,
+    },
+    3: {
+      category: "Relaciones con amigos",
+      rf: true,
+    },
+    13: {
+      category: "Relaciones con amigos",
+      rf: true,
+      inverse: true,
+    },
+    19: {
+      category: "Relaciones con amigos",
+      rf: true,
+    },
+    29: {
+      category: "Relaciones con amigos",
+      rf: true,
+    },
+    67: {
+      category: "Relaciones con amigos",
+      rf: true,
+    },
+    73: {
+      category: "Relaciones con amigos",
+      rf: true,
+    },
+    77: {
+      category: "Relaciones con amigos",
+      rf: true,
+    },
+    7: {
+      category: "Nivel educativo",
+    },
+
+    12: {
+      category: "Nivel educativo",
+      inverse: true,
+    },
+
+    18: {
+      category: "Nivel educativo",
+      inverse: true,
+    },
+    26: {
+      category: "Nivel educativo",
+      rf: true,
+      inverse: true,
+    },
+    34: {
+      category: "Nivel educativo",
+    },
+    40: {
+      categories: ["Nivel educativo", "Salud mental"],
+    },
+    42: {
+      category: "Nivel educativo",
+      rf: true,
+    },
+    61: {
+      category: "Nivel educativo",
+    },
+
+    69: {
+      category: "Nivel educativo",
+      rf: true,
+      inverse: true,
+    },
+    72: {
+      category: "Nivel educativo",
+      rf: true,
+    },
+    74: {
+      category: "Nivel educativo",
+    },
+    79: {
+      category: "Nivel educativo",
+    },
+    80: {
+      categories: ["Salud mental", "Nivel educativo"],
+      rf: true,
+    },
+    16: {
+      category: "Interés laboral",
+      ageBased: true,
+    },
+    27: {
+      category: "Interés laboral",
+    },
+    36: {
+      category: "Interés laboral",
+    },
+    44: {
+      category: "Interés laboral",
+      ageBased: true,
+      rf: true,
+    },
+    51: {
+      category: "Interés laboral",
+    },
+    78: {
+      category: "Interés laboral",
+    },
+    1: {
+      category: "Conducta agresiva-delictiva",
+    },
+    9: {
+      category: "Conducta agresiva-delictiva",
+    },
+    11: {
+      category: "Conducta agresiva-delictiva",
+    },
+    24: {
+      category: "Conducta agresiva-delictiva",
+      rf: true,
+    },
+    30: {
+      category: "Conducta agresiva-delictiva",
+    },
+    31: {
+      category: "Conducta agresiva-delictiva",
+    },
+    35: {
+      category: "Conducta agresiva-delictiva",
+    },
+    37: {
+      category: "Conducta agresiva-delictiva",
+    },
+    49: {
+      category: "Conducta agresiva-delictiva",
+    },
+    50: {
+      category: "Conducta agresiva-delictiva",
+      rf: true,
+    },
+    53: {
+      category: "Conducta agresiva-delictiva",
+    },
+    59: {
+      category: "Conducta agresiva-delictiva",
+    },
+    64: {
+      category: "Conducta agresiva-delictiva",
+    },
+    81: {
+      category: "Conducta agresiva-delictiva",
+    },
+  };
+
+  let finalResult = 0;
+  let rfResult = 0;
+  const categoryRes = {
+    "Uso-abuso de sustancias": 0,
+    "Salud mental": 0,
+    "Relaciones familiares": 0,
+    "Relaciones con amigos": 0,
+    "Nivel educativo": 0,
+    "Interés laboral": 0,
+    "Conducta agresiva-delictiva": 0,
+  };
+
+  for (const question in data) {
+    const value = questionMatrix[question].inverse
+      ? data[question]
+        ? 0
+        : 1
+      : data[question]
+      ? 1
+      : 0;
+    if (questionMatrix[question].categories) {
+      questionMatrix[question].categories.forEach((category) => {
+        categoryRes[category] += value;
+      });
+    } else {
+      categoryRes[questionMatrix[question].category] += value;
+    }
+    finalResult += value;
+    if (questionMatrix[question].rf) {
+      rfResult += value;
+    }
+    console.log(
+      `${question}: ${data[question]} value: ${value} inverse: ${questionMatrix[question].inverse} rf: ${questionMatrix[question].rf}`
+    );
+  }
+  console.log({ finalResult });
+  console.log({ rfResult });
+  console.log({ categoryRes });
+
+  return { ...data, ...categoryRes, finalResult, rfResult };
+};
+
 const SurveyComponent = () => {
+  const history = useHistory();
+
+  useEffect(() => {
+    const surveyId = localStorage.getItem("surveyId");
+    if (!surveyId) {
+      history.push("/");
+    }
+  }, [history]);
+
   const json = {
     title: "CUESTIONARIO DE TAMIZAJE DE PROBLEMAS EN ADOLESCENTES (POSIT)",
     pages: pagesArray,
@@ -139,9 +501,26 @@ const SurveyComponent = () => {
   survey.completeText = "Finalizar";
   survey.onComplete.add(function (sender) {
     console.log("Result JSON:\n" + JSON.stringify(sender.data, null, 3));
+    const ref = firebase.collection("surveys");
+
+    const result = analyseResult(sender.data);
+
+    ref
+      .doc(localStorage.getItem("surveyId"))
+      .update(result)
+      .then(() => {
+        history.push("/end");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   });
 
-  return <Survey.Survey model={survey} />;
+  return (
+    <div>
+      <Survey.Survey model={survey} />
+    </div>
+  );
 };
 
 export default SurveyComponent;
