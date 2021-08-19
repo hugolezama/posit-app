@@ -499,6 +499,7 @@ const SurveyComponent = () => {
   survey.pageNextText = "Siguiente";
   survey.pagePrevText = "Anterior";
   survey.completeText = "Finalizar";
+  survey.showCompletedPage = false;
   survey.onComplete.add(function (sender) {
     console.log("Result JSON:\n" + JSON.stringify(sender.data, null, 3));
     const ref = firebase.collection("surveys");

@@ -30,22 +30,29 @@ const Demographic = () => {
 
     const ref = firebase.collection("surveys");
     console.log(ref);
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
     const newSurvey = {
       name: name,
       lastName: lastName,
       email: email,
       gender: gender,
-      dob: dob.toLocaleDateString("en-MX"),
-      created: new Date().toISOString(),
+      dob: dob.toLocaleDateString("es-MX", options),
+      created: new Date().toISOString().split("T")[0],
     };
 
     console.log(newSurvey);
 
-    ref
-      .add(newSurvey)
-      .then((docRef) => {
-        console.log(docRef.id);
-        localStorage.setItem("surveyId", docRef.id);
+    const newObj = ref.doc();
+
+    newObj
+      .set({ ...newSurvey, id: newObj.id })
+      .then(() => {
+        console.log(newObj.id);
+        localStorage.setItem("surveyId", newObj.id);
         history.push("/survey");
       })
       .catch((err) => {
